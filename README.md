@@ -2,7 +2,7 @@ A little script to simplify installing Bitwig Studio in user-space on Fedora KDE
 
 Officially, Bitwig Studio for Linux is only available in `.deb` and `.flatpak` formats. The `.deb` installer is aimed at Ubuntu/Debian users. The `.flatpak` version, while globally adaptable, has its drawbacks (for example, it doesn't support plugins installed via [yabridge](https://github.com/robbert-vdh/yabridge)). There's no official `.rpm` build for Fedora.
 
-![Screenshot][/screenshots/context_menu.avif]
+![Screenshot](/screenshots/context_menu.avif)
 
 ## What's what
 
