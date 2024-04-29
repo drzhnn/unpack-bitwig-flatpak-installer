@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 48 48"
+   version="1.1"
+   id="svg18"
+   sodipodi:docname="com.bitwig.BitwigStudio.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview18"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="true"
+     inkscape:zoom="11.313708"
+     inkscape:cx="10.253048"
+     inkscape:cy="25.986174"
+     inkscape:window-width="1920"
+     inkscape:window-height="1128"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg18">
+    <inkscape:grid
+       id="grid18"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="1"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       dotted="false"
+       gridanglex="30"
+       gridanglez="30"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <linearGradient
+       id="0"
+       gradientUnits="userSpaceOnUse"
+       y1="653.96"
+       x2="0"
+       y2="301.3">
+      <stop
+         stop-color="#c52828"
+         id="stop1" />
+      <stop
+         offset="1"
+         stop-color="#ff5454"
+         id="stop2" />
+    </linearGradient>
+  </defs>
+  <g
+     transform="matrix(2.4129127,0,0,2.4129127,-2.647008,-2490.4066)"
+     fill="#ffffff"
+     fill-opacity="0.851"
+     enable-background="new"
+     id="g18">
+    <circle
+       cx="-325.89001"
+       cy="478.75"
+       r="173.45"
+       transform="matrix(0.04813,0,0,0.04813,26.788,1019.08)"
+       fill="url(#0)"
+       fill-opacity="1"
+       id="circle2"
+       style="fill:url(#0)" />
+    <g
+       transform="matrix(0.39752,0,0,0.39752,3.352,1036.95)"
+       id="g17">
+      <g
+         transform="translate(0,-10)"
+         id="g6">
+        <circle
+           r="2"
+           cx="12"
+           cy="18"
+           id="circle3" />
+        <circle
+           r="2"
+           cx="17"
+           cy="18"
+           id="circle4" />
+        <circle
+           r="2"
+           cx="22"
+           cy="18"
+           id="circle5" />
+        <circle
+           r="2"
+           cx="27"
+           cy="18"
+           id="circle6" />
+      </g>
+      <g
+         transform="translate(0,-5)"
+         id="g10">
+        <circle
+           r="2"
+           cx="12"
+           cy="18"
+           id="circle7" />
+        <circle
+           r="2"
+           cx="17"
+           cy="18"
+           id="circle8" />
+        <circle
+           r="2"
+           cx="22"
+           cy="18"
+           id="circle9" />
+        <circle
+           r="2"
+           cx="27"
+           cy="18"
+           id="circle10" />
+      </g>
+      <g
+         fill="#ffffff"
+         id="g16">
+        <circle
+           r="2"
+           cx="27"
+           cy="18"
+           transform="translate(5,-5)"
+           id="circle11" />
+        <circle
+           r="2"
+           cx="27"
+           cy="18"
+           transform="translate(-20,-5)"
+           id="circle12" />
+        <circle
+           r="2"
+           cx="27"
+           cy="18"
+           transform="translate(-20)"
+           id="circle13" />
+        <circle
+           r="2"
+           cx="27"
+           cy="18"
+           transform="translate(-15)"
+           id="circle14" />
+        <circle
+           r="2"
+           cx="27"
+           cy="18"
+           transform="translate(5)"
+           id="circle15" />
+        <circle
+           r="2"
+           cx="27"
+           cy="18"
+           id="circle16" />
+      </g>
+    </g>
+  </g>
+</svg>

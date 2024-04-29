@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Service
+Icon=run-build-install-root
+X-KDE-ServiceTypes=KonqPopupMenu/Plugin
+MimeType=application/vnd.flatpak;
+Actions=unpack_and_install;unpack_here;
+Encoding=UTF-8
+X-KDE-Priority=TopLevel
+
+[Desktop Action unpack_and_install]
+Name=Unpack and install Bitwig Studio
+Exec=$(command -v alacritty || command -v kitty || command -v konsole) -e pkexec --user $(logname) unpack_bitwig_installer install "%f"
+Icon=run-build-install-root
+
+[Desktop Action unpack_here]
+Name=Unpack here
+Exec=$(command -v alacritty || command -v kitty || command -v konsole) -e pkexec --user $(logname) unpack_bitwig_installer unpack "%f"
+Icon=run-build-install-root

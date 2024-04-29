@@ -1,0 +1,217 @@
+#!/usr/bin/env bash
+
+<< INFO
+CREATED      : 2024-04-08
+UPDATED      : 2024-04-29
+DEPENDENCIES : ostree
+DESCRIPTION  : Unpack official Bitwig Studio flatpak installer
+               into predefined locations in user-space.
+INFO
+
+set -euo pipefail
+
+INSTALL_BITWIG_DIR="$HOME/.local/opt"
+INSTALL_LAUNCHER_DIR="$HOME/.local/bin"
+CUSTOM_ICON="$HOME/.local/share/icons/hicolor/scalable/apps/com.bitwig.BitwigStudio.2d67c86e.svg"
+USE_CUSTOM_ICON=true
+BITWIG_NICENESS=0
+BITWIG_RTPRIORITY=80
+
+SCRIPT_ARG_COUNT=$#
+SCRIPT_MODE="$1"
+FLATPAK_FILE="$2"
+FLATPAK_FILENAME=$(basename "$FLATPAK_FILE")
+TIMEOUT=0.3
+
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+GREEN='\033[0;32m'
+RESET='\033[0m'
+
+LOGO='
+      ██  ██  ██  ██
+
+  ██  ██  ██  ██  ██  ██
+  
+  ██  ██          ██  ██
+'
+
+echo -e "${YELLOW}$LOGO${RESET}"
+
+perform_checks() {
+    if pgrep -x "bitwig-studio" > /dev/null; then
+        echo -e "${RED}ERROR${RESET}: Close Bitwig Studio before running this script"
+        echo -e '\nPress Enter to exit'; read
+        exit 1
+    else
+        echo -e "${GREEN}OK${RESET}: Bitwig Studio is not running"
+        sleep $TIMEOUT
+    fi
+
+    if ! command -v ostree >/dev/null; then
+        echo -e "${RED}ERROR${RESET}: Cannot locate 'ostree' binary"
+        echo -e '\nPress Enter to exit'; read
+        exit 1
+    else
+        echo -e "${GREEN}OK${RESET}: Found 'ostree' binary"
+        sleep $TIMEOUT
+    fi
+
+    if [ $SCRIPT_ARG_COUNT -eq 0 ]; then
+        echo -e "${RED}ERROR${RESET}: No file provided"
+        echo -e '\nPress Enter to exit'; read
+        exit 1
+    fi
+
+    if [[ "$FLATPAK_FILE" != *.flatpak ]]; then
+        echo -e "${RED}ERROR${RESET}: Provided file is not a flatpak: $FLATPAK_FILE"
+        echo -e '\nPress Enter to exit'; read
+        exit 1
+    else
+        echo -e "${GREEN}OK${RESET}: Found flatpak file: $FLATPAK_FILENAME"
+        sleep $TIMEOUT
+    fi
+
+    if [ $SCRIPT_MODE == "install" ]; then
+        if ! grep -iqE "bitwig.*studio|studio.*bitwig" <<< "$FLATPAK_FILENAME"; then
+            echo -e "${RED}ERROR${RESET}: Flatpak file doesn't contain 'Bitwig Studio' in its name"
+            echo -e '\nPress Enter to exit'; read
+            exit 1
+        else
+            echo -e "${GREEN}OK${RESET}: Flatpak file has 'Bitwig' and 'Studio' in its name"
+            sleep $TIMEOUT
+        fi
+    fi
+}
+
+backup_previous_bitwig() {
+    if [ ! -d "$INSTALL_BITWIG_DIR/" ]; then
+        mkdir -p "$INSTALL_BITWIG_DIR/"
+    else
+        if [ -d "$INSTALL_BITWIG_DIR/bitwig" ]; then
+            echo "Backup previous Bitwig installation"
+            if [ -d "$INSTALL_BITWIG_DIR/bitwig_old" ]; then
+                rm -rf "$INSTALL_BITWIG_DIR/bitwig_old"
+            fi
+            mv "$INSTALL_BITWIG_DIR/bitwig" "$INSTALL_BITWIG_DIR/bitwig_old"
+            sleep $TIMEOUT
+        fi
+    fi
+}
+
+unpack_flatpak_file() {
+    local subcommand="$1"
+    local unpack_to=""
+
+    echo "Initialize OSTree repository"
+    temp_dir=$(mktemp -d)
+    trap 'sudo rm -rf "$temp_dir"; sleep 3' EXIT
+
+    repo_name=$(basename $temp_dir)
+    ostree init --repo=$temp_dir
+
+    sleep $TIMEOUT
+
+    echo "Apply OSTree static delta update to repository"
+
+    sleep $TIMEOUT
+
+    echo 'This may take a while'
+    sudo ostree static-delta apply-offline --repo=$temp_dir "$FLATPAK_FILE" &
+    ostree_pid=$!
+
+    while kill -0 $ostree_pid 2> /dev/null; do
+        echo -ne "${GREEN}+${RESET}"
+        sleep 0.5
+    done
+    echo
+
+    case $subcommand in
+        install)
+            backup_previous_bitwig
+            unpack_to="$INSTALL_BITWIG_DIR/bitwig/"
+            ;;
+        *)
+            unpack_to="$FLATPAK_FILE".$RANDOM
+            ;;
+    esac
+
+    echo "Unpack"
+    cd /tmp/
+    commit=$(basename $(echo $repo_name/objects/*/*.commit | cut --delimiter='/' --fields='3-' --output-delimiter='' | tr -d '\0') .commit)
+    ostree checkout --repo=$repo_name -U $commit "$unpack_to"
+
+    sleep $TIMEOUT
+
+    if [ $subcommand != "install" ]; then
+        echo ""
+        echo -e "${GREEN}OK${RESET}: Unpacking finished${RESET}"
+        sleep $TIMEOUT
+        exit 0
+    fi
+}
+
+create_bitwig_launcher() {
+    echo "Create 'bitwig-studio' launcher script with x11 support"
+    mkdir -p "$INSTALL_LAUNCHER_DIR/"
+
+    temp_launcher_script=$(mktemp "/tmp/bitwig-studio-launcher.XXXXXX")
+    echo "#!/usr/bin/env sh" > $temp_launcher_script
+    echo "nice -n $BITWIG_NICENESS chrt -f $BITWIG_RTPRIORITY env GDK_BACKEND=x11 '$INSTALL_BITWIG_DIR/bitwig/files/bitwig-studio'" >> $temp_launcher_script
+    chmod +x $temp_launcher_script
+
+    launcher_script="$INSTALL_LAUNCHER_DIR/bitwig-studio"
+    if [ -f $launcher_script ]; then
+        expected_hash=$(sha256sum $temp_launcher_script | awk '{ print $1 }')
+        if ! echo "$expected_hash $launcher_script" | sha256sum --check --status; then
+            echo "Backup existing 'bitwig-studio' launcher in $INSTALL_LAUNCHER_DIR"
+            mv "$launcher_script" "$launcher_script.bak"
+        fi
+    fi
+    mv $temp_launcher_script "$launcher_script"
+    sleep $TIMEOUT
+}
+
+copy_bitwig_resources() {
+    echo "Copy shared files"
+    cp -r "$INSTALL_BITWIG_DIR/bitwig/export/share/applications" "$HOME/.local/share/"
+    cp -r "$INSTALL_BITWIG_DIR/bitwig/export/share/icons" "$HOME/.local/share/"
+    mkdir -p "$HOME/.local/share/mime/"
+    cp -r "$INSTALL_BITWIG_DIR/bitwig/export/share/mime/packages" "$HOME/.local/share/mime/"
+
+    # Create icon for *.bwtemplate files
+    cp "$HOME/.local/share/icons/hicolor/scalable/mimetypes/com.bitwig.BitwigStudio.application-bitwig-project.svg" \
+       "$HOME/.local/share/icons/hicolor/scalable/mimetypes/com.bitwig.BitwigStudio.application-bitwig-template.svg"
+    sleep $TIMEOUT
+}
+
+install_custom_bitwig_icon() {
+    if [ $USE_CUSTOM_ICON == "true" ] && [ -f "$CUSTOM_ICON" ]; then
+            echo "Use custom icon"
+            original_icon="Icon=com.bitwig.BitwigStudio"
+            custom_icon="Icon=$CUSTOM_ICON"
+            sed -i "s|$original_icon|$custom_icon|g" "$HOME/.local/share/applications/com.bitwig.BitwigStudio.desktop"
+            sleep $TIMEOUT
+    fi
+}
+
+update_things() {
+    echo "Update cache"
+    update-desktop-database "$HOME/.local/share/applications" > /dev/null
+    update-mime-database "$HOME/.local/share/mime" > /dev/null
+    $(command -v kbuildsycoca6 || command -v kbuildsycoca5) &> /dev/null
+}
+
+main() {
+    perform_checks
+    echo ""
+    unpack_flatpak_file $SCRIPT_MODE
+    create_bitwig_launcher
+    copy_bitwig_resources
+    install_custom_bitwig_icon
+    update_things
+    echo ""
+    echo -e "${GREEN}OK${RESET}: Installation complete"
+}
+
+main
