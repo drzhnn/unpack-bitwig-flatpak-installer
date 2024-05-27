@@ -14,8 +14,6 @@ INSTALL_BITWIG_DIR="$HOME/.local/opt"
 INSTALL_LAUNCHER_DIR="$HOME/.local/bin"
 CUSTOM_ICON="$HOME/.local/share/icons/hicolor/scalable/apps/com.bitwig.BitwigStudio.2d67c86e.svg"
 USE_CUSTOM_ICON=true
-BITWIG_NICENESS=0
-BITWIG_RTPRIORITY=80
 
 SCRIPT_ARG_COUNT=$#
 SCRIPT_MODE="$1"
@@ -157,7 +155,7 @@ create_bitwig_launcher() {
 
     temp_launcher_script=$(mktemp "/tmp/bitwig-studio-launcher.XXXXXX")
     echo "#!/usr/bin/env sh" > $temp_launcher_script
-    echo "nice -n $BITWIG_NICENESS chrt -f $BITWIG_RTPRIORITY env GDK_BACKEND=x11 '$INSTALL_BITWIG_DIR/bitwig/files/bitwig-studio'" >> $temp_launcher_script
+    echo "env GDK_BACKEND=x11 '$INSTALL_BITWIG_DIR/bitwig/files/bitwig-studio'" >> $temp_launcher_script
     chmod +x $temp_launcher_script
 
     launcher_script="$INSTALL_LAUNCHER_DIR/bitwig-studio"
