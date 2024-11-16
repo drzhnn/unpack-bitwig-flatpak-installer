@@ -20,7 +20,7 @@ Officially, Bitwig Studio for Linux is only available in `.deb` and `.flatpak` f
 
 1. Install `ostree` package: `sudo dnf install ostree`  
 2. Download Bitwig Studio flatpak installer from [your Bitwig account](https://www.bitwig.com/account-profile/)  
-3. Download the contents of this repository either manually or by using git: `git clone unpack-bitwig-flatpak-installer`  
+3. Download the contents of this repository either manually or by using git: `git clone https://github.com/drzhnn/unpack-bitwig-flatpak-installer.git`  
 4. Run `install_assets.sh` script  
 
 ## Usage
